@@ -1,15 +1,14 @@
 from rest_framework import status
 from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from rest_framework.response import Response
-
-from taskool.models import Option
+from taskool.models import Question
 from rest_framework.permissions import AllowAny
 from . import serializer
 
 
-class OptionAPI(ListCreateAPIView):
-    queryset = Option.objects.all()
-    serializer_class = serializer.OptionSerializer
+class QuestionAPI(ListCreateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = serializer.QuestionSerializer
     permission_classes = (AllowAny,)
 
     def create(self, request, *args, **kwargs):
@@ -18,15 +17,15 @@ class OptionAPI(ListCreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response({"status":True,
-                         "message":"Option added",
+                         "message":"Question added",
                          "data":serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class OptionRetrieveUpdateDestroyAPI(RetrieveUpdateDestroyAPIView):
-    serializer_class = serializer.OptionSerializer
+class QuestionRetrieveUpdateDestroyAPI(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializer.QuestionSerializer
 
     def get_queryset(self):
-        return Option.objects.filter(id=self.kwargs.get('pk', None))
+        return Question.objects.filter(id=self.kwargs.get('pk', None))
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)

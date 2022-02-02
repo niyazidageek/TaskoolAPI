@@ -7,3 +7,4 @@ class OptionSerializer(serializers.ModelSerializer):
         model = Option
         fields = "__all__"
 
+
