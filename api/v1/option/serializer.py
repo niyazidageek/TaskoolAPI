@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from taskool.models import Option
+from taskool.models import Option, QuestionFile
 
 
 class OptionSerializer(serializers.ModelSerializer):
@@ -8,3 +8,7 @@ class OptionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class QuestionFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionFile
+        fields = "__all__"
