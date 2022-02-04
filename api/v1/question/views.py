@@ -34,7 +34,11 @@ class QuestionRetrieveUpdateDestroyAPI(RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        if serializer.data.image:
+
+        if serializer.validated_data.get('image'):
+            if instance.image:
+                instance.image.delete()
+        else:
             if instance.image:
                 instance.image.delete()
 

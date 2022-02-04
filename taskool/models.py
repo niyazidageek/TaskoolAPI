@@ -37,3 +37,7 @@ class Option(TimestampModel):
         return self.name
 
 
+class QuestionType(TimestampModel):
+    name = models.CharField()
+
+
