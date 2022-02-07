@@ -82,8 +82,9 @@ class QuestionRetrieveUpdateDestroyAPI(RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        # if instance.image:
-        #     instance.image.delete()
+        if instance.file_content.all():
+            for file in instance.file_content.all():
+                file.media.delete()
         self.perform_destroy(instance)
         return Response({"status": True, "message": "Question deleted!"})
 
