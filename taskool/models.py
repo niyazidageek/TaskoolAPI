@@ -43,6 +43,7 @@ class Option(TimestampModel):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     explanation = models.CharField(max_length=1000)
     file_content = models.ManyToManyField(File)
+    is_correct = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-id"]
