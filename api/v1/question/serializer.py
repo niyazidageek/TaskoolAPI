@@ -6,7 +6,7 @@ from ..option.serializer import OptionSerializer, FileSerializer
 class QuestionSerializer(serializers.ModelSerializer):
     deleteable_files = serializers.ListField(child=serializers.IntegerField(), required=False)
     file_content = FileSerializer(many=True, read_only=True)
-    option_set = OptionSerializer(many=True)
+    option_set = OptionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Question

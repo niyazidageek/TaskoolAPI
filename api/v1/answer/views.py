@@ -2,48 +2,46 @@ from rest_framework import status
 from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-
-from taskool.models import Option, File
+from taskool.models import Option, File, Answer, TextAnswer, AudioAnswer
 from rest_framework.permissions import AllowAny
 from . import serializer
 
 
-class OptionAPI(ListCreateAPIView):
-    queryset = Option.objects.all()
-    serializer_class = serializer.OptionSerializer
+class AnswerAPI(ListCreateAPIView):
+    queryset = Answer.objects.all()
+    serializer_class = serializer.AnswerSerializer
     permission_classes = (AllowAny,)
     parser_classes = [MultiPartParser, FormParser]
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def create(self, request, *args, **kwargs):
-        files = request.FILES.getlist('file_content')
+        text_answer = request.data.get('text_answer')
+        audio_answer = request.data.get('audio_answer')
 
-        if files:
-            request.data.pop('file_content')
-            serializer = self.get_serializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                option_qs = Option.objects.get(id=serializer.data['id'])
-                uploaded_files=[]
-                for file in files:
-                    content = File.objects.create(media=file, extension=file.__getattribute__('content_type'))
-                    uploaded_files.append(content)
+        if text_answer:
+            text_answer_db = TextAnswer.objects.create(text=text_answer)
+            request.data['text_answer'] = text_answer_db.__getattribute__('id')
 
-                    option_qs.file_content.add(*uploaded_files)
-                    context = serializer.data
-                    context["file_content"] = [file.id for file in uploaded_files]
-                    return Response(context, status=status.HTTP_201_CREATED)
-        else:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response({"status": True,
-                             "message": "Option added",
-                             "data": serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
+        if audio_answer:
+            audio_answer_db = AudioAnswer.objects.create(media=audio_answer)
+            request.data['audio_answer'] = audio_answer_db.__getattribute__('id')
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({"status": True,
+                         "message": "Option added",
+                         "data": serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class OptionRetrieveUpdateDestroyAPI(RetrieveUpdateDestroyAPIView):
-    serializer_class = serializer.OptionSerializer
+    serializer_class = serializer.AnswerSerializer
 
     def get_queryset(self):
         return Option.objects.filter(id=self.kwargs.get('pk', None))

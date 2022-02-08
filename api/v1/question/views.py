@@ -14,6 +14,9 @@ class QuestionAPI(ListCreateAPIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def list(self, request, *args, **kwargs):
+
+        print(request.user.id)
+
         queryset = self.filter_queryset(self.get_queryset())
 
         page = self.paginate_queryset(queryset)
