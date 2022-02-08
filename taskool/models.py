@@ -41,6 +41,8 @@ class Question(TimestampModel):
 class Option(TimestampModel):
     name = models.CharField(max_length=255)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    explanation = models.CharField(max_length=1000)
+    file_content = models.ManyToManyField(File)
 
     class Meta:
         ordering = ["-id"]

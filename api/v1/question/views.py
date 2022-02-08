@@ -4,7 +4,6 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from taskool.models import Question, File
 from rest_framework.permissions import AllowAny
-import os
 from . import serializer
 
 
@@ -13,6 +12,17 @@ class QuestionAPI(ListCreateAPIView):
     serializer_class = serializer.QuestionSerializer
     permission_classes = (AllowAny,)
     parser_classes = [MultiPartParser, FormParser]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         files = request.FILES.getlist('file_content')
