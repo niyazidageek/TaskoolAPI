@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView)
+from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveDestroyAPIView)
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from taskool.models import Option, File, Answer, TextAnswer, AudioAnswer
@@ -12,13 +12,6 @@ class AnswerAPI(ListCreateAPIView):
     serializer_class = serializer.AnswerSerializer
     permission_classes = (AllowAny,)
     parser_classes = [MultiPartParser, FormParser]
-
-    def list(self, request, *args, **kwargs):
-
-        queryset = self.filter_queryset(self.get_queryset())
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         text_answer = request.data.get('text_answer')
@@ -41,7 +34,7 @@ class AnswerAPI(ListCreateAPIView):
                          "data": serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class OptionRetrieveUpdateDestroyAPI(RetrieveUpdateDestroyAPIView):
+class AnswerRetrieveDestroyAPI(RetrieveDestroyAPIView):
     serializer_class = serializer.AnswerSerializer
 
     def get_queryset(self):
