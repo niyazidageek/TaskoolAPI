@@ -57,9 +57,21 @@ class Option(TimestampModel):
 class TextAnswer(TimestampModel):
     text = models.CharField(max_length=2000)
 
+    class Meta:
+        ordering = ["-id"]
+
+    def __str__(self):
+        return self.text
+
 
 class AudioAnswer(TimestampModel):
     media = models.FileField(upload_to=upload_to, validators=question_file_validation)
+
+    class Meta:
+        ordering = ["-id"]
+
+    def __str__(self):
+        return self.media
 
 
 class Answer(TimestampModel):
