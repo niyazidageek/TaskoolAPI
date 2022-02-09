@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView)
+from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from taskool.models import Question, File

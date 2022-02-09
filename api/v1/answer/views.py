@@ -38,7 +38,7 @@ class AnswerAPI(ListCreateAPIView):
 class AnswerRetrieveDestroyAPI(RetrieveDestroyAPIView):
     serializer_class = serializer.AnswerSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['user','question']
+    filterset_fields = ['user', 'question']
 
     def get_queryset(self):
         return Answer.objects.filter(id=self.kwargs.get('pk', None))
