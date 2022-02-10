@@ -18,4 +18,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         for group in validated_data['groups']:
             user.groups.add(group)
 
+        user.first_name = validated_data['first_name']
+        user.last_name = validated_data['last_name']
+
+        user.save()
+
         return user
