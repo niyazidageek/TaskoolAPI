@@ -39,6 +39,7 @@ class Question(TimestampModel):
     point = models.FloatField()
     file_content = models.ManyToManyField(File)
     is_option_based = models.BooleanField()
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["-id"]
