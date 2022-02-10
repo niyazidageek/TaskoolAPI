@@ -13,6 +13,8 @@ class AnswerAPI(ListCreateAPIView):
     serializer_class = serializer.AnswerSerializer
     permission_classes = (AllowAny,)
     parser_classes = [MultiPartParser, FormParser]
+    # filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['user', 'question']
 
     def create(self, request, *args, **kwargs):
         text_answer = request.data.get('text_answer')
@@ -41,8 +43,6 @@ class AnswerAPI(ListCreateAPIView):
 
 class AnswerRetrieveDestroyAPI(RetrieveDestroyAPIView):
     serializer_class = serializer.AnswerSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['user', 'question']
 
     def get_queryset(self):
         return Answer.objects.filter(id=self.kwargs.get('pk', None))

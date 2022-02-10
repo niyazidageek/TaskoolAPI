@@ -28,6 +28,12 @@ class File(TimestampModel):
         return self.media
 
 
+class Quiz(TimestampModel):
+    name = models.CharField(max_length=255)
+    is_available = models.BooleanField(default=False)
+    deadline = models.DateTimeField()
+
+
 class Question(TimestampModel):
     name = models.CharField(max_length=255)
     point = models.FloatField()
