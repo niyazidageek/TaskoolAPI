@@ -17,14 +17,18 @@ class AnswerAPI(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         text_answer = request.data.get('text_answer')
         audio_answer = request.data.get('audio_answer')
+        request.data._mutable = True
 
         if text_answer:
             text_answer_db = TextAnswer.objects.create(text=text_answer)
-            request.data['text_answer'] = text_answer_db.__getattribute__('id')
+            request.data.update({'text_answer_id':text_answer_db.__getattribute__('id')})
 
         if audio_answer:
             audio_answer_db = AudioAnswer.objects.create(media=audio_answer)
-            request.data['audio_answer'] = audio_answer_db.__getattribute__('id')
+            request.data['audio_answer_id'] = audio_answer_db.__getattribute__('id')
+
+        request.data['user'] = request.user.id
+        request.data._mutable = False
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

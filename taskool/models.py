@@ -79,8 +79,8 @@ class Answer(TimestampModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     option = models.ForeignKey(Option, on_delete=models.CASCADE, null=True)
-    text_answer = models.OneToOneField(TextAnswer, on_delete=models.CASCADE)
-    audio_answer = models.OneToOneField(AudioAnswer, on_delete=models.CASCADE)
+    text_answer = models.OneToOneField(TextAnswer, on_delete=models.CASCADE, null=True)
+    audio_answer = models.OneToOneField(AudioAnswer, on_delete=models.CASCADE, null=True)
 
     class Meta:
         ordering = ["-id"]
