@@ -19,7 +19,8 @@ class AnswerAPI(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         text_answer = request.data.get('text_answer')
         audio_answer = request.data.get('audio_answer')
-        request.data._mutable = True
+        if request.data:
+            request.data._mutable = True
 
         if text_answer:
             text_answer_db = TextAnswer.objects.create(text=text_answer)
@@ -30,15 +31,28 @@ class AnswerAPI(ListCreateAPIView):
             request.data['audio_answer_id'] = audio_answer_db.__getattribute__('id')
 
         request.data['user'] = request.user.id
-        request.data._mutable = False
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        if not serializer.validated_data.get('option') or text_answer or audio_answer:
+            return Response({"detail": "You must provide either answer or manual input!"})
+
+        if serializer.validated_data.get('option'):
+            option = Option.objects.get(id=serializer.validated_data.get('option').id)
+
+            if option.question_id is not serializer.validated_data.get('question'):
+                return Response({"detial": "The option doesn't correspond to the given question!"},
+                                status=status.HTTP_409_CONFLICT)
+
+            if option.is_correct:
+                serializer.validated_data.update({'is_correct':True})
+
         same_users_answer = Answer.objects.filter(question=serializer.validated_data.get('question'), user=request.user.id)
 
         if same_users_answer:
-            return Response({"detail":"You have already answered to this question!"})
+            return Response({"detial": "You have already answered to this question!"},
+                            status=status.HTTP_409_CONFLICT)
 
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
