@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveDestroyAPIView)
+from rest_framework.generics import (ListCreateAPIView, RetrieveDestroyAPIView)
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from taskool.models import Option, File, Answer, TextAnswer, AudioAnswer
@@ -13,8 +13,8 @@ class AnswerAPI(ListCreateAPIView):
     serializer_class = serializer.AnswerSerializer
     permission_classes = (AllowAny,)
     parser_classes = [MultiPartParser, FormParser]
-    # filter_backends = [DjangoFilterBackend]
-    # filterset_fields = ['user', 'question']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user', 'question__quiz_id']
 
     def create(self, request, *args, **kwargs):
         text_answer = request.data.get('text_answer')
