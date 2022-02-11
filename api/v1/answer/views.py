@@ -34,6 +34,12 @@ class AnswerAPI(ListCreateAPIView):
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        same_users_answer = Answer.objects.filter(question=serializer.validated_data.get('question'), user=request.user.id)
+
+        if same_users_answer:
+            return Response({"detail":"You have already answered to this question!"})
+
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response({"status": True,
