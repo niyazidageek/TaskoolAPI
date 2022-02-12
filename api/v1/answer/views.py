@@ -35,30 +35,28 @@ class AnswerAPI(ListCreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        if not serializer.validated_data.get('option') or text_answer or audio_answer:
+        if not (serializer.validated_data.get('option') or text_answer or audio_answer):
             return Response({"detail": "You must provide either answer or manual input!"})
+
+        same_users_answer = Answer.objects.filter(question=serializer.validated_data.get('question'),
+                                                  user=request.user.id)
+
+        if same_users_answer:
+            return Response({"detail": "You have already answered to this question!"},
+                            status=status.HTTP_409_CONFLICT)
 
         if serializer.validated_data.get('option'):
             option = Option.objects.get(id=serializer.validated_data.get('option').id)
 
-            if option.question_id is not serializer.validated_data.get('question'):
-                return Response({"detial": "The option doesn't correspond to the given question!"},
+            if option.question_id is not serializer.validated_data.get('question').id:
+                return Response({"detail": "The option doesn't correspond to the given question!"},
                                 status=status.HTTP_409_CONFLICT)
 
-            if option.is_correct:
-                serializer.validated_data.update({'is_correct':True})
-
-        same_users_answer = Answer.objects.filter(question=serializer.validated_data.get('question'), user=request.user.id)
-
-        if same_users_answer:
-            return Response({"detial": "You have already answered to this question!"},
-                            status=status.HTTP_409_CONFLICT)
+            self.perform_create(serializer)
+            return Response({"explanation": option.explanation})
 
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response({"status": True,
-                         "message": "Option added",
-                         "data": serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AnswerRetrieveDestroyAPI(RetrieveDestroyAPIView):

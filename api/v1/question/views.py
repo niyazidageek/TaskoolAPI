@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -12,6 +13,8 @@ class QuestionAPI(ListCreateAPIView):
     serializer_class = serializer.QuestionSerializer
     permission_classes = (AllowAny,)
     parser_classes = [MultiPartParser, FormParser]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['quiz']
 
     def list(self, request, *args, **kwargs):
 
